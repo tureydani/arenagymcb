@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { RegistroMembresia, VMembresiasVigentes } from '@/lib/db/models';
 import { listarPaginado } from '@/lib/db/listarPaginado';
 import { verificarAuthPersonal } from '@/lib/auth/personalAuth';
+import { respuestaErrorDb } from '@/lib/db/errores';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -35,6 +36,6 @@ export async function POST(request) {
     });
     return NextResponse.json(registro, { status: 201 });
   } catch (err) {
-    return NextResponse.json({ error: err.message || 'No se pudo registrar la membresía' }, { status: 400 });
+    return respuestaErrorDb(err, 'No se pudo registrar la membresía');
   }
 }

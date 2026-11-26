@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { Membresia } from '@/lib/db/models';
 import { listarPaginado } from '@/lib/db/listarPaginado';
+import { verificarAuthPersonal, exigirRol } from '@/lib/auth/personalAuth';
+import { respuestaErrorDb } from '@/lib/db/errores';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -15,6 +17,10 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const payload = await verificarAuthPersonal(request);
+  const prohibido = exigirRol(payload, ['ADMIN']);
+  if (prohibido) return prohibido;
+
   const body = await request.json();
   const { nombre, descripcion, duracion_dias, precio, limite_asistencias } = body;
 
@@ -33,9 +39,6 @@ export async function POST(request) {
     });
     return NextResponse.json(membresia, { status: 201 });
   } catch (err) {
-    if (err.name === 'SequelizeUniqueConstraintError') {
-      return NextResponse.json({ error: 'Ya existe un plan con ese nombre' }, { status: 409 });
-    }
-    return NextResponse.json({ error: 'No se pudo crear el plan' }, { status: 500 });
+    return respuestaErrorDb(err, 'Ya existe un plan con ese nombre');
   }
 }

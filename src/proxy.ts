@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verificarAuthPersonal } from '@/lib/auth/personalAuth';
 
-const RUTAS_PUBLICAS = ['/api', '/api/personal/login'];
+const RUTAS_PUBLICAS = ['/api', '/api/health', '/api/personal/login'];
 
 function withCors(response: NextResponse) {
   response.headers.set('Access-Control-Allow-Origin', '*');

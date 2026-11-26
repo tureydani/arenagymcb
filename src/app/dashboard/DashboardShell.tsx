@@ -19,6 +19,16 @@ const SECCIONES = [
   { href: '/dashboard/personal', label: 'Personal' },
   { href: '/dashboard/membresias', label: 'Membresías' },
   { href: '/dashboard/registro-membresias', label: 'Inscripciones' },
+  { href: '/dashboard/jornadas-caja', label: 'Caja' },
+  { href: '/dashboard/pagos', label: 'Pagos' },
+  { href: '/dashboard/ventas', label: 'Ventas' },
+  { href: '/dashboard/asistencias', label: 'Asistencias' },
+  { href: '/dashboard/evaluaciones', label: 'Evaluaciones' },
+  { href: '/dashboard/metas', label: 'Metas' },
+  { href: '/dashboard/rutinas', label: 'Rutinas' },
+  { href: '/dashboard/cumplimiento', label: 'Cumplimiento' },
+  { href: '/dashboard/productos', label: 'Productos' },
+  { href: '/dashboard/maquinas', label: 'Máquinas' },
 ];
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {

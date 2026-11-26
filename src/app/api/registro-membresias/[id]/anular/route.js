@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { RegistroMembresia } from '@/lib/db/models';
-import { verificarAuthPersonal } from '@/lib/auth/personalAuth';
+import { verificarAuthPersonal, exigirRol } from '@/lib/auth/personalAuth';
 
 export async function PATCH(request, { params }) {
   const payload = await verificarAuthPersonal(request);
+  const prohibido = exigirRol(payload, ['ADMIN']);
+  if (prohibido) return prohibido;
+
   const { id } = await params;
   const { motivo } = await request.json();
 

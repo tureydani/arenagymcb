@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose';
+import { NextResponse } from 'next/server';
 
 // jose (no jsonwebtoken) porque este módulo lo usa middleware.ts, que corre
 // en el Edge Runtime (sin las APIs de Node que jsonwebtoken necesita).
@@ -29,4 +30,21 @@ export async function verificarAuthPersonal(request) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Guardia de rol para usar en cada endpoint que lo necesite:
+ *   const prohibido = exigirRol(payload, ['ADMIN']);
+ *   if (prohibido) return prohibido;
+ * `payload` es el que devuelve verificarAuthPersonal (incluye `roles`).
+ * Devuelve null si el rol está permitido, o una respuesta 403 si no.
+ */
+export function exigirRol(payload, rolesPermitidos) {
+  const roles = payload?.roles || [];
+  const autorizado = rolesPermitidos.some((rol) => roles.includes(rol));
+  if (autorizado) return null;
+  return NextResponse.json(
+    { error: 'No tiene permiso para realizar esta acción' },
+    { status: 403 }
+  );
 }

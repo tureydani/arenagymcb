@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { Membresia } from '@/lib/db/models';
+import { verificarAuthPersonal, exigirRol } from '@/lib/auth/personalAuth';
 
 export async function PATCH(request, { params }) {
+  const payload = await verificarAuthPersonal(request);
+  const prohibido = exigirRol(payload, ['ADMIN']);
+  if (prohibido) return prohibido;
+
   const { id } = await params;
   const body = await request.json();
   const { nombre, descripcion, duracion_dias, precio, limite_asistencias, activo } = body;

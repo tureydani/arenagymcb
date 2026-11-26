@@ -5,7 +5,10 @@ import { Op } from 'sequelize';
  * los endpoints de listado. `camposBusqueda` son nombres de columna del
  * propio modelo (no de asociaciones).
  */
-export async function listarPaginado(Model, { page, limit, q, camposBusqueda = [], where = {}, order, scope }) {
+export async function listarPaginado(
+  Model,
+  { page, limit, q, camposBusqueda = [], where = {}, order, scope, include }
+) {
   const pagina = Math.max(1, Number(page) || 1);
   const tamano = Math.min(100, Math.max(1, Number(limit) || 20));
 
@@ -21,6 +24,7 @@ export async function listarPaginado(Model, { page, limit, q, camposBusqueda = [
     order: order || [[Model.primaryKeyAttribute, 'DESC']],
     limit: tamano,
     offset: (pagina - 1) * tamano,
+    ...(include && { include, distinct: true }),
   });
 
   return { data: rows, total: count, page: pagina, limit: tamano };

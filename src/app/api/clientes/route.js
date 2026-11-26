@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { Cliente } from '@/lib/db/models';
 import { listarPaginado } from '@/lib/db/listarPaginado';
 import { verificarAuthPersonal } from '@/lib/auth/personalAuth';
+import { respuestaErrorDb } from '@/lib/db/errores';
 
 function esMayorDeEdad(fechaNacimiento) {
   const hoy = new Date();
@@ -49,9 +50,6 @@ export async function POST(request) {
     });
     return NextResponse.json(cliente, { status: 201 });
   } catch (err) {
-    if (err.name === 'SequelizeUniqueConstraintError') {
-      return NextResponse.json({ error: 'Ya existe un cliente activo con ese teléfono o email' }, { status: 409 });
-    }
-    return NextResponse.json({ error: 'No se pudo crear el cliente' }, { status: 500 });
+    return respuestaErrorDb(err, 'Ya existe un cliente activo con ese teléfono o email');
   }
 }

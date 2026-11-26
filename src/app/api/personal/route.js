@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { Personal } from '@/lib/db/models';
 import { listarPaginado } from '@/lib/db/listarPaginado';
+import { verificarAuthPersonal, exigirRol } from '@/lib/auth/personalAuth';
+import { respuestaErrorDb } from '@/lib/db/errores';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -15,6 +17,10 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
+  const payload = await verificarAuthPersonal(request);
+  const prohibido = exigirRol(payload, ['ADMIN']);
+  if (prohibido) return prohibido;
+
   const body = await request.json();
   const { nombre, apellido, usuario, password, telefono, roles } = body;
 
@@ -36,9 +42,6 @@ export async function POST(request) {
     });
     return NextResponse.json(personal, { status: 201 });
   } catch (err) {
-    if (err.name === 'SequelizeUniqueConstraintError') {
-      return NextResponse.json({ error: 'Ese usuario ya existe' }, { status: 409 });
-    }
-    return NextResponse.json({ error: 'No se pudo crear el usuario' }, { status: 500 });
+    return respuestaErrorDb(err, 'Ese usuario ya existe');
   }
 }
